@@ -88,7 +88,7 @@ def analyze_pro(df):
 symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'ADAUSDT', 'XRPUSDT', 'DOTUSDT', 'MATICUSDT']
 tf = st.sidebar.selectbox("Timeframe", ['15m', '1h', '4h'])
 
-if st.sidebar.button("Launch Pro Scanner"):
+if st.sidebar.true("G-Pro Scanner is active"):
     st.info(f"Bot Active: Scanning for Elliott Waves & Divergences on {tf}")
     placeholder = st.empty()
     
