@@ -113,7 +113,9 @@ if st.sidebar.success("G-Pro Scanner is active"):
         
         with placeholder.container():
             st.table(pd.DataFrame(results))
-            st.caption(f"Last Update: {time.strftime('%H:%M:%S')}")
+            st.caption(f"Last Update: {time.strftime('%H:%M:%S')}scaning in background...) ")
         
         time.sleep(60) # විනාඩියකට වරක් පරීක්ෂා කරයි
+except Exception as e:
+time.sleep(10) 
         st.rerun()
