@@ -46,7 +46,6 @@ def analyze_pro(df):
     prices = df['C'].values
     rsi = df['RSI'].values
     
-    # 1. Pivot Points (ප්‍රධාන හැරවුම් ලක්ෂ්‍ය)
     pivots = []
     for i in range(10, len(prices)-10):
         if highs[i] == max(highs[i-5:i+5]): 
@@ -54,48 +53,38 @@ def analyze_pro(df):
         if lows[i] == min(lows[i-5:i+5]): 
             pivots.append({'type': 'Low', 'val': lows[i], 'rsi': rsi[i], 'idx': i})
     
-    if len(pivots) < 6: return "Wave Analyzing...", "Neutral"
+    if len(pivots) < 6: return "Analyzing...", "Neutral", 0, 0, 0
 
     try:
-        # Elliott Structure (පසුගිය pivots 5 ලබා ගැනීම)
         p = pivots[-6:]
-        w1_high = p[-5]['val']
-        w2_low = p[-4]['val']
-        w3_high = p[-3]['val']
-        w4_low = p[-2]['val']
-        w5_high = p[-1]['val']
-        
-        # RSI values at peaks
-        rsi_w3 = p[-3]['rsi']
-        rsi_w5 = p[-1]['rsi']
-
+        w1_high, w2_low, w3_high, w4_low = p[-5]['val'], p[-4]['val'], p[-3]['val'], p[-2]['val']
         curr_price = prices[-1]
-        msg = "Scanning Patterns..."
-        signal = "Neutral"
-
-        # --- Strategy 1: Wave 3 Entry (Fib 0.618) ---
-        wave1_dist = abs(p[-5]['val'] - p[-6]['val'])
-        fib_618 = w1_high - (wave1_dist * 0.618)
         
-        if w2_low >= fib_618 * 0.99 and curr_price > w1_high:
-            msg = "🚀 Wave 3 Explosion (Confirmed)"
+        entry, tp, sl = 0, 0, 0
+        msg, signal = "Scanning...", "Neutral"
+
+        # --- Strategy: Wave 3 Explosion (The Best Entry) ---
+        wave1_dist = abs(w1_high - p[-6]['val'])
+        fib_618 = w1_high - (wave1_dist * 0.618)
+
+        if curr_price > w1_high and w2_low >= fib_618 * 0.99:
+            entry = curr_price
+            sl = w2_low * 0.995 # Wave 2 පහළට වඩා මදක් අඩුවෙන්
+            tp = entry + (wave1_dist * 1.618) # Wave 3 ඉලක්කය (1.618 extension)
+            msg = "🚀 WAVE 3 BUY"
             signal = "BUY"
 
-        # --- Strategy 2: Wave 5 + RSI Divergence (Top Hunter) ---
-        # මිල ඉහළ යද්දී RSI එක පහළ යනවා නම් (Bearish Divergence)
-        if w5_high > w3_high and rsi_w5 < rsi_w3:
-            msg = "⚠ Wave 5 Divergence (Trend Ending)"
-            signal = "SELL"
-
-        # --- Strategy 3: Wave 4 Bounce ---
-        if w4_low > w1_high and curr_price > w4_low:
-            msg = "🔥 Wave 5 Start (Safe Buy)"
+        # --- Strategy: Wave 5 Entry ---
+        elif curr_price > w3_high and w4_low > w1_high:
+            entry = curr_price
+            sl = w4_low * 0.995
+            tp = entry + (abs(w3_high - w2_low) * 0.618)
+            msg = "🔥 WAVE 5 BUY"
             signal = "BUY"
 
-        return msg, signal
+        return msg, signal, round(entry, 4), round(tp, 4), round(sl, 4)
     except:
-        return "Detecting Waves...", "Neutral"
-
+        return "Detecting...", "Neutral", 0, 0, 0
 symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'ADAUSDT', 'XRPUSDT', 'DOTUSDT', 'MATICUSDT']
 tf = st.sidebar.selectbox("Timeframe", ['15m', '1h', '4h'])
 
@@ -114,8 +103,13 @@ if st.sidebar.button("Launch Pro Scanner"):
             
             # Telegram Alerts for signals
             if sig_type != "Neutral":
-                alert = f"🌊 ELLIOTT PRO SIGNAL\nPair: {s}\nStatus: {status}\nPrice: ${price}"
-                send_telegram(alert)
+    alert = (f"🌊 ELLIOTT PRO SIGNAL\n\n"
+             f"🪙 Pair: {s}\n"
+             f"📊 Status: {status}\n"
+             f"✅ *ENTRY: {entry}*\n"
+             f"🎯 *TP: {tp}*\n"
+             f"🛑 *SL: {sl}*")
+    send_telegram(alert)
         
         with placeholder.container():
             st.table(pd.DataFrame(results))
