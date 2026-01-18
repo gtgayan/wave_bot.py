@@ -96,20 +96,20 @@ if st.sidebar.button("Launch Pro Scanner"):
         results = []
         for s in symbols:
             df = get_market_data(s, tf)
-            status, sig_type = analyze_pro(df)
+            status, sig_type, entry, tp, sl = analyze_pro(df)
             price = df.iloc[-1]['C']
             
             results.append({"Pair": s, "Price": price, "Elliott Status": status})
             
             # Telegram Alerts for signals
             if sig_type != "Neutral":
-                alert = (f"🌊 ELLIOTT PRO SIGNAL\n\n"
+                    alert = (f"🌊 ELLIOTT PRO SIGNAL\n\n"
                            f"🪙 Pair: {s}\n"
-                      f"📊 Status: {status}\n"
-                       f"✅ *ENTRY: {entry}*\n"
+                          f"📊 Status: {status}\n"
+                           f"✅ *ENTRY: {entry}*\n"
                         f"🎯 *TP: {tp}*\n"
                         f"🛑 *SL: {sl}*")
-          send_telegram(alert)
+              send_telegram(alert)
         
         with placeholder.container():
             st.table(pd.DataFrame(results))
