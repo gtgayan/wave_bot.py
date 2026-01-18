@@ -103,13 +103,13 @@ if st.sidebar.button("Launch Pro Scanner"):
             
             # Telegram Alerts for signals
             if sig_type != "Neutral":
-    alert = (f"🌊 ELLIOTT PRO SIGNAL\n\n"
-             f"🪙 Pair: {s}\n"
-             f"📊 Status: {status}\n"
-             f"✅ *ENTRY: {entry}*\n"
-             f"🎯 *TP: {tp}*\n"
-             f"🛑 *SL: {sl}*")
-    send_telegram(alert)
+                alert = (f"🌊 ELLIOTT PRO SIGNAL\n\n"
+                           f"🪙 Pair: {s}\n"
+                      f"📊 Status: {status}\n"
+                       f"✅ *ENTRY: {entry}*\n"
+                        f"🎯 *TP: {tp}*\n"
+                        f"🛑 *SL: {sl}*")
+                        send_telegram(alert)
         
         with placeholder.container():
             st.table(pd.DataFrame(results))
