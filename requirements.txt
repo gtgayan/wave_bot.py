@@ -1,5 +1,6 @@
 streamlit
 python-binance
 pandas
-plotly
+numpy
+
 requests
