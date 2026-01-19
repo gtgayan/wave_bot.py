@@ -2,5 +2,7 @@ streamlit
 binance-connector
 pandas
 numpy
+
 requests
+
 
