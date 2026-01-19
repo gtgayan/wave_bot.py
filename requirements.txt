@@ -1,6 +1,6 @@
 streamlit
-python-binance
+binance-connector
 pandas
 numpy
-
 requests
+
