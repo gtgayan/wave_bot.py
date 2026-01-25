@@ -1,4 +1,5 @@
 streamlit
 pandas
 requests
-streamlit-lightweight-charts-nt
+streamlit-lightweight-charts
+
